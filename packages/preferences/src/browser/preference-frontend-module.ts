@@ -14,11 +14,12 @@ import { PreferencePriority, PreferenceProviderUser } from './preference-provide
 export default new ContainerModule(bind => {
 
     bind(PreferencePriority).toConstantValue(PreferenceProviderPriority.USER);
+    bind(PreferenceProviderUser).toSelf().inSingletonScope();
     bind(PreferenceProvider).to(PreferenceProviderUser).inSingletonScope();
 
-    bind(PreferenceService).to(PreferenceServiceImpl).inSingletonScope();
-    // bind(PreferenceService).toDynamicValue(ctx => {
-    //     const userProvider = ctx.container.get<PreferenceProviderUser>(PreferenceProviderUser);
-    //     return new PreferenceServiceImpl(userProvider);
-    // }).inSingletonScope();
+    // bind(PreferenceService).to(PreferenceServiceImpl).inSingletonScope();
+    bind(PreferenceService).toDynamicValue(ctx => {
+        const userProvider = ctx.container.get<PreferenceProviderUser>(PreferenceProviderUser);
+        return new PreferenceServiceImpl([userProvider]);
+    }).inSingletonScope();
 });

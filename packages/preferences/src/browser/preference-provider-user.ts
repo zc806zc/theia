@@ -7,8 +7,7 @@
 
 import { inject, injectable } from 'inversify';
 import { ResourceProvider, Resource, ILogger } from "@theia/core/lib/common";
-import URI from '@theia/core/lib/common/uri';
-import { } from '@theia/userstorage';
+// import URI from '@theia/core/lib/common/uri';
 import { DisposableCollection } from '@theia/core/lib/common';
 import { PreferenceProvider, PreferenceProviderPriority, PreferenceProviderClient } from '@theia/preferences-api/lib/browser';
 import * as jsoncparser from "jsonc-parser";
@@ -38,7 +37,7 @@ export class PreferenceProviderUser implements PreferenceProvider {
         @inject(ILogger) protected readonly logger: ILogger,
         @inject(PreferencePriority) public readonly priority: PreferenceProviderPriority
     ) {
-        this.preferenceResource = provider(new URI('user_storage:settings.json'));
+        // this.preferenceResource = provider(new URI('user_storage:settings.json'));
         this.preferenceResource.then(resource => {
             if (resource.onDidChangeContents) {
                 resource.onDidChangeContents(content => this.onDidChangePreferences().then(() =>

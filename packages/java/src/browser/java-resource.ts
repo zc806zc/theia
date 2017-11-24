@@ -39,7 +39,9 @@ export class JavaResourceResolver implements ResourceResolver {
     constructor(
         @inject(JavaClientContribution)
         protected readonly clientContribution: JavaClientContribution
-    ) { }
+    ) {
+        console.log('test');
+    }
 
     resolve(uri: URI): JavaResource {
         if (uri.scheme !== JAVA_SCHEME) {

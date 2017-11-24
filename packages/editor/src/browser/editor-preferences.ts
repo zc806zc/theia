@@ -83,7 +83,7 @@ export function bindEditorPreferences(bind: interfaces.Bind): void {
     bind(EditorPreferences).toDynamicValue(ctx => {
         const preferences = ctx.container.get<PreferenceService>(PreferenceService);
         return createEditorPreferences(preferences);
-    });
+    }).inSingletonScope();
 
     bind(PreferenceContribution).toConstantValue({ schema: editorPreferenceSchema });
 }
