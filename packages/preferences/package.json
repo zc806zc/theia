@@ -6,6 +6,7 @@
     "@theia/core": "^0.2.1",
     "@theia/filesystem": "^0.2.1",
     "@theia/preferences-api": "^0.2.1",
+    "@theia/userstorage": "^0.2.1",
     "@theia/workspace": "^0.2.1",
     "ajv": "^5.2.2",
     "jsonc-parser": "^1.0.0"
@@ -15,8 +16,7 @@
   },
   "theiaExtensions": [
     {
-      "frontend": "lib/browser/preference-frontend-module",
-      "backend": "lib/node/preference-backend-module"
+      "frontend": "lib/browser/preference-frontend-module"
     }
   ],
   "keywords": [

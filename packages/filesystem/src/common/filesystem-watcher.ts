@@ -9,7 +9,7 @@ import { injectable, inject } from "inversify";
 import { Disposable, DisposableCollection, Emitter, Event } from '@theia/core/lib/common';
 import URI from '@theia/core/lib/common/uri';
 import { DidFilesChangedParams, FileChangeType, FileSystemWatcherServer, WatchOptions } from './filesystem-watcher-protocol';
-import { FileSystemPreferences } from "./filesystem-preferences";
+// import { FileSystemPreferences } from "./filesystem-preferences";
 
 export {
     FileChangeType
@@ -29,7 +29,7 @@ export class FileSystemWatcher implements Disposable {
 
     constructor(
         @inject(FileSystemWatcherServer) protected readonly server: FileSystemWatcherServer,
-        @inject(FileSystemPreferences) protected readonly preferences: FileSystemPreferences
+        // @inject(FileSystemPreferences) protected readonly preferences: FileSystemPreferences
     ) {
         this.toDispose.push(this.onFileChangedEmitter);
 
@@ -38,12 +38,12 @@ export class FileSystemWatcher implements Disposable {
             onDidFilesChanged: e => this.onDidFilesChanged(e)
         });
 
-        this.toDispose.push(preferences);
-        this.toDispose.push(preferences.onPreferenceChanged(e => {
-            if (e.preferenceName === 'files.watcherExclude') {
-                this.toRestartAll.dispose();
-            }
-        }));
+        // this.toDispose.push(preferences);
+        // this.toDispose.push(preferences.onPreferenceChanged(e => {
+        //     if (e.preferenceName === 'files.watcherExclude') {
+        //         this.toRestartAll.dispose();
+        //     }
+        // }));
     }
 
     /**
@@ -105,7 +105,11 @@ export class FileSystemWatcher implements Disposable {
     }
 
     protected getIgnored(): Promise<string[]> {
-        const patterns = this.preferences['files.watcherExclude'];
-        return Promise.resolve(Object.keys(patterns).filter(pattern => patterns[pattern]));
+        const patterns = [
+            "**/.git/objects/**",
+            "**/.git/subtree-cache/**",
+            "**/node_modules/**"
+        ];
+        return Promise.resolve(patterns);
     }
 }

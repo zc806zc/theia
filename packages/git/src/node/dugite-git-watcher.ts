@@ -8,7 +8,7 @@
 import { injectable, inject } from "inversify";
 import { Git } from '../common/git';
 import { Repository, WorkingDirectoryStatus } from '../common/model';
-import { GitPreferences } from '../common/git-preferences';
+// import { GitPreferences } from '../common/git-preferences';
 import { GitWatcherServer, GitWatcherClient, GitStatusChangeEvent } from '../common/git-watcher';
 import { FileSystemWatcherServer } from '@theia/filesystem/lib/common/filesystem-watcher-protocol';
 
@@ -22,7 +22,7 @@ export class DugiteGitWatcherServer implements GitWatcherServer {
 
     constructor(
         @inject(Git) protected readonly git: Git,
-        @inject(GitPreferences) protected readonly preferences: GitPreferences,
+        // @inject(GitPreferences) protected readonly preferences: GitPreferences,
         @inject(FileSystemWatcherServer) protected readonly filesystemWatcher: FileSystemWatcherServer
     ) {
         this.watchers = new Map();
@@ -31,7 +31,7 @@ export class DugiteGitWatcherServer implements GitWatcherServer {
 
     async watchGitChanges(repository: Repository): Promise<number> {
         const watcher = this.watcherSequence++;
-        const interval = this.preferences['git.pollInterval']; // TODO refresh timers on preference change.
+        const interval = 100; // TODO refresh timers on preference change. // TODO use backend config
         const timer = setInterval(async () => {
             try {
                 const status = await this.git.status(repository);

@@ -6,13 +6,19 @@
  */
 
 import { ContainerModule, } from 'inversify';
-import { WebSocketConnectionProvider } from '@theia/core/lib/browser';
-import { PreferenceService, PreferenceServer, preferencesPath } from "../common";
+import { PreferenceService, PreferenceServiceImpl, PreferenceProvider, PreferenceProviderPriority } from "@theia/preferences-api/lib/browser/";
+import { PreferencePriority, PreferenceProviderUser } from './preference-provider-user';
+// export const UserPreferenceProvider = Symbol('UserPreferenceProvider');
+// export type UserPreferenceProvider = PreferenceProvider;
 
 export default new ContainerModule(bind => {
-    bind(PreferenceService).toSelf().inSingletonScope();
 
-    bind(PreferenceServer).toDynamicValue(ctx =>
-        ctx.container.get(WebSocketConnectionProvider).createProxy(preferencesPath)
-    ).inSingletonScope();
+    bind(PreferencePriority).toConstantValue(PreferenceProviderPriority.USER);
+    bind(PreferenceProvider).to(PreferenceProviderUser).inSingletonScope();
+
+    bind(PreferenceService).to(PreferenceServiceImpl).inSingletonScope();
+    // bind(PreferenceService).toDynamicValue(ctx => {
+    //     const userProvider = ctx.container.get<PreferenceProviderUser>(PreferenceProviderUser);
+    //     return new PreferenceServiceImpl(userProvider);
+    // }).inSingletonScope();
 });

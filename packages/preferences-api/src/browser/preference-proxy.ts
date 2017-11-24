@@ -6,7 +6,7 @@
  */
 
 import { Disposable, DisposableCollection, Event, Emitter } from '@theia/core/lib/common';
-import { PreferenceService, PreferenceChange } from "./preference-service";
+import { PreferenceService, PreferenceChange } from "./preference-protocol";
 import { PreferenceSchema } from "./preference-contribution";
 import * as Ajv from "ajv";
 
@@ -44,6 +44,7 @@ export function createPreferenceProxy<T extends Configuration>(preferences: Pref
                     });
                 }
             } else {
+                // TODO If it's deleted, fire the default preference
                 onPreferenceChangedEmitter.fire(e);
             }
         }

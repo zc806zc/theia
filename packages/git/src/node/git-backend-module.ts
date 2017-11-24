@@ -10,11 +10,11 @@ import { GitWatcher, GitWatcherPath, GitWatcherClient, GitWatcherServer } from '
 import { DugiteGit } from './dugite-git';
 import { DugiteGitWatcherServer } from './dugite-git-watcher';
 import { ContainerModule } from 'inversify';
-import { bindGitPreferences } from '../common/git-preferences';
+// import { bindGitPreferences } from '../common/git-preferences';
 import { ConnectionHandler, JsonRpcConnectionHandler } from "@theia/core/lib/common";
 
 export default new ContainerModule(bind => {
-    bindGitPreferences(bind);
+    // bindGitPreferences(bind);
     bind(DugiteGit).toSelf().inSingletonScope();
     bind(Git).toDynamicValue(ctx => ctx.container.get(DugiteGit)).inSingletonScope();
     bind(ConnectionHandler).toDynamicValue(context => new JsonRpcConnectionHandler(GitPath, () => context.container.get(Git))).inSingletonScope();

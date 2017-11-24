@@ -8,9 +8,9 @@
 import { ContainerModule } from "inversify";
 import { LanguageServerContribution } from "@theia/languages/lib/node";
 import { CppContribution } from './cpp-contribution';
-import { bindCppPreferences } from "../common/";
+// import { bindCppPreferences } from "../common/";
 
 export default new ContainerModule(bind => {
-    bindCppPreferences(bind);
+    // bindCppPreferences(bind);
     bind(LanguageServerContribution).to(CppContribution).inSingletonScope();
 });

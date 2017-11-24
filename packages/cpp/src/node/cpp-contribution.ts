@@ -5,10 +5,10 @@
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import { injectable, inject } from "inversify";
+import { injectable, /* inject */ } from "inversify";
 import { BaseLanguageServerContribution, IConnection } from "@theia/languages/lib/node";
 import { CPP_LANGUAGE_ID, CPP_LANGUAGE_NAME } from '../common';
-import { CppPreferences } from "../common";
+// import { CppPreferences } from "../common";
 import { Message, isRequestMessage } from 'vscode-ws-jsonrpc';
 import { InitializeParams, InitializeRequest } from 'vscode-languageserver-protocol';
 
@@ -19,7 +19,7 @@ export class CppContribution extends BaseLanguageServerContribution {
     readonly name = CPP_LANGUAGE_NAME;
 
     constructor(
-        @inject(CppPreferences) protected readonly cppPreferences: CppPreferences
+        // @inject(CppPreferences) protected readonly cppPreferences: CppPreferences
     ) {
         super();
     }
@@ -41,8 +41,8 @@ export class CppContribution extends BaseLanguageServerContribution {
     public start(clientConnection: IConnection): void {
         let command: any = '';
         let args: string[] = [];
-        if (this.cppPreferences["cpp.clangdPath"] === "") {
-            command = (this.cppPreferences["cpp.clangdPath"] + '/clangd');
+        if ("cpp.clangdPath") {
+            command = ("cpp.clangdPath" + '/clangd');
             args = [];
         } else {
             command = 'clangd';
