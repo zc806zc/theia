@@ -38,6 +38,11 @@ export interface FileSystem extends JsonRpcServer<FileSystemClient> {
     setContent(file: FileStat, content: string, options?: { encoding?: string }): Promise<FileStat>;
 
     /**
+     * Updates the content in base64 replacing its previous value.
+     */
+    setContentBase64(file: FileStat, content: string): Promise<FileStat>;
+
+    /**
      * Moves the file to a new path identified by the resource.
      *
      * The optional parameter overwrite can be set to replace an existing file at the location.

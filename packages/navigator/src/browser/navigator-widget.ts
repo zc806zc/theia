@@ -14,6 +14,8 @@ import { FileTreeWidget } from "@theia/filesystem/lib/browser";
 import { FileNavigatorModel } from "./navigator-model";
 import { h } from "@phosphor/virtualdom/lib";
 import { WorkspaceCommands } from '@theia/workspace/lib/browser/workspace-frontend-contribution';
+import { FileSystem } from "@theia/filesystem/lib/common";
+import { ILogger } from '@theia/core/lib/common';
 
 export const FILE_STAT_NODE_CLASS = 'theia-FileStatNode';
 export const DIR_NODE_CLASS = 'theia-DirNode';
@@ -27,12 +29,14 @@ export const CLASS = 'theia-Files';
 export class FileNavigatorWidget extends FileTreeWidget {
 
     constructor(
+        @inject(ILogger) protected readonly logger: ILogger,
+        @inject(FileSystem) protected readonly fileSystem: FileSystem,
         @inject(TreeProps) readonly props: TreeProps,
         @inject(FileNavigatorModel) readonly model: FileNavigatorModel,
         @inject(ContextMenuRenderer) contextMenuRenderer: ContextMenuRenderer,
         @inject(CommandService) protected readonly commandService: CommandService
     ) {
-        super(props, model, contextMenuRenderer);
+        super(logger, fileSystem, props, model, contextMenuRenderer);
         this.id = FILE_NAVIGATOR_ID;
         this.title.label = LABEL;
         this.addClass(CLASS);
@@ -61,6 +65,25 @@ export class FileNavigatorWidget extends FileTreeWidget {
         super.onAfterAttach(msg);
         this.addClipboardListener(this.node, 'copy', e => this.handleCopy(e));
         this.addClipboardListener(this.node, 'paste', e => this.handlePaste(e));
+        // Add DragEvent to prevent the user to drop a file in the navigator area
+        // and not leaving THEIA . The user has to DROP the event over a  folder
+        // to be allowed
+        this.addEventListener(this.node, 'dragenter', e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        this.addEventListener(this.node, 'dragleave', e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        this.addEventListener(this.node, 'drop', e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        this.addEventListener(this.node, 'dragover', e => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
     }
 
     protected handleCopy(event: ClipboardEvent): void {

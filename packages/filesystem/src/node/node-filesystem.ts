@@ -72,7 +72,7 @@ export class FileSystemNode implements FileSystem {
         return { stat, content };
     }
 
-    async setContent(file: FileStat, content: string, options?: { encoding?: string }): Promise<FileStat> {
+    protected async verifyFileStatContent(file: FileStat): Promise<URI> {
         const _uri = new URI(file.uri);
         const stat = await this.doGetStat(_uri, 0);
         if (!stat) {
@@ -86,13 +86,29 @@ export class FileSystemNode implements FileSystem {
 Expected: ${JSON.stringify(stat)}.
 Actual: ${JSON.stringify(file)}.`);
         }
-        const encoding = await this.doGetEncoding(options);
-        await fs.writeFile(FileUri.fsPath(_uri), content, { encoding });
-        const newStat = await this.doGetStat(_uri, 1);
+        return _uri;
+    }
+
+    protected async verifyNewStat(file: FileStat, uri: URI): Promise<FileStat> {
+        const newStat = await this.doGetStat(uri, 1);
         if (newStat) {
             return newStat;
         }
         throw new Error(`Error occurred while writing file content. The file does not exist under ${file.uri}.`);
+    }
+
+    async setContent(file: FileStat, content: string, options?: { encoding?: string }): Promise<FileStat> {
+        const _uri = await this.verifyFileStatContent(file);
+        const encoding = await this.doGetEncoding(options);
+        await fs.writeFile(FileUri.fsPath(_uri), content, { encoding });
+        return this.verifyNewStat(file, _uri);
+    }
+
+    async setContentBase64(file: FileStat, content: string): Promise<FileStat> {
+        const buffer = Buffer.from(content, 'base64');
+        const _uri = await this.verifyFileStatContent(file);
+        await fs.writeFile(FileUri.fsPath(_uri), buffer);
+        return this.verifyNewStat(file, _uri);
     }
 
     protected async isInSync(file: FileStat, stat: FileStat): Promise<boolean> {

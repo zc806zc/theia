@@ -36,6 +36,10 @@ export class MockFilesystem implements FileSystem {
         return Promise.resolve(mockFileStat);
     }
 
+    setContentBase64(file: FileStat, content: string): Promise<FileStat> {
+        return Promise.resolve(mockFileStat);
+    }
+
     move(sourceUri: string, targetUri: string, options?: { overwrite?: boolean }): Promise<FileStat> {
         return Promise.resolve(mockFileStat);
     }
