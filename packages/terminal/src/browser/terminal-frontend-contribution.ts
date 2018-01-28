@@ -21,15 +21,26 @@ import {
     KeybindingContextRegistry,
     isOSX
 } from '@theia/core/lib/common';
-import { CommonMenus, ApplicationShell } from '@theia/core/lib/browser';
+import { CommonMenus, ApplicationShell, OpenerService, open } from '@theia/core/lib/browser';
 import { TERMINAL_WIDGET_FACTORY_ID, TerminalWidgetFactoryOptions, TerminalWidget } from './terminal-widget';
 import { WidgetManager } from '@theia/core/lib/browser/widget-manager';
 import { WorkspaceService } from '@theia/workspace/lib/browser/workspace-service';
+import URI from "@theia/core/lib/common/uri";
 
 export namespace TerminalCommands {
     export const NEW: Command = {
         id: 'terminal:new',
         label: 'New Terminal'
+    };
+
+    export const HELLO1: Command = {
+        id: 'hello1',
+        label: 'Hello 1!'
+    };
+
+    export const HELLO2: Command = {
+        id: 'hello2',
+        label: 'Hello 2!'
     };
 }
 
@@ -43,6 +54,7 @@ export class TerminalFrontendContribution implements CommandContribution, MenuCo
         @inject(WidgetManager) protected readonly widgetManager: WidgetManager,
         @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService,
         @inject(KeybindingContextRegistry) protected readonly keybindingContextRegistry: KeybindingContextRegistry,
+        @inject(OpenerService) protected readonly openerService: OpenerService,
     ) { }
 
     registerCommands(commands: CommandRegistry): void {
@@ -50,6 +62,22 @@ export class TerminalFrontendContribution implements CommandContribution, MenuCo
         commands.registerHandler(TerminalCommands.NEW.id, {
             isEnabled: () => true,
             execute: () => this.newTerminal()
+        });
+
+        commands.registerCommand(TerminalCommands.HELLO1);
+        commands.registerHandler(TerminalCommands.HELLO1.id, {
+            isEnabled: () => true,
+            execute: () => {
+                open(this.openerService, new URI('file:///usr/include/stdio.h'));
+            }
+        });
+
+        commands.registerCommand(TerminalCommands.HELLO2);
+        commands.registerHandler(TerminalCommands.HELLO2.id, {
+            isEnabled: () => true,
+            execute: () => {
+                open(this.openerService, new URI('file:///usr/lib/../include/stdio.h'));
+            }
         });
     }
 
