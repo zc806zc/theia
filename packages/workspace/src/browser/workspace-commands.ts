@@ -140,7 +140,7 @@ export class WorkspaceCommandContribution implements CommandContribution {
                     validate: name => this.validateFileName(name, parent)
                 });
                 dialog.open().then(name =>
-                    this.fileSystem.move(uri.toString(), uri.parent.resolve(name).toString())
+                    this.fileSystem.rename(uri.toString(), name)
                 );
             })
         }));

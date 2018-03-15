@@ -75,4 +75,8 @@ export class MockFilesystem implements FileSystem {
     setClient(client: FileSystemClient) {
 
     }
+
+    rename(sourceUri: string, targetName: string): Promise<FileStat> {
+        return Promise.resolve(mockFileStat);
+    }
 }

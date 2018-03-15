@@ -273,6 +273,28 @@ Actual: ${JSON.stringify(file)}.`);
         // NOOP
     }
 
+    async rename(sourceUri: string, targetName: string): Promise<FileStat> {
+
+        const _sourceUri = new URI(sourceUri);
+        const _targetUri = new URI(_sourceUri.parent.resolve(targetName).toString());
+
+        const [sourceStat, targetStat] = await Promise.all([this.doGetStat(_sourceUri, 1), this.doGetStat(_targetUri, 1)]);
+        if (!sourceStat) {
+            throw new Error(`File does not exist under ${sourceUri}.`);
+        }
+        if (targetStat) {
+            throw new Error(`Cannot rename ${sourceUri} to ${_targetUri.toString()}. Filename already exists.`);
+        }
+        return new Promise<FileStat>((resolve, reject) => {
+            fs.rename(FileUri.fsPath(_sourceUri), FileUri.fsPath(_targetUri), async error => {
+                if (error) {
+                    return reject(error);
+                }
+                resolve(await this.doGetStat(_targetUri, 1));
+            });
+        });
+    }
+
     protected async doGetStat(uri: URI, depth: number): Promise<FileStat | undefined> {
         try {
             const stats = await fs.stat(FileUri.fsPath(uri));

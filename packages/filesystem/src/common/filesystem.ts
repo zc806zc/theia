@@ -100,6 +100,10 @@ export interface FileSystem extends JsonRpcServer<FileSystemClient> {
      */
     getCurrentUserHome(): Promise<FileStat>;
 
+    /**
+     * Rename the file. Returns the FileStat of the renamed file.
+     */
+    rename(sourceUri: string, newName: string): Promise<FileStat>;
 }
 
 export interface FileSystemClient {
