@@ -6,15 +6,17 @@
  */
 
 import { SelectionService } from '@theia/core/lib/common';
-import { Widget, BaseWidget, Message, Saveable, SaveableSource, Navigatable } from '@theia/core/lib/browser';
+import { Widget, BaseWidget, Message, Saveable, SaveableSource, Navigatable, LabelProvider } from '@theia/core/lib/browser';
 import URI from '@theia/core/lib/common/uri';
-import { TextEditor } from "./editor";
+import { TextEditor, /* TextEditorProvider */ } from "./editor";
 
 export class EditorWidget extends BaseWidget implements SaveableSource, Navigatable {
 
     constructor(
-        readonly editor: TextEditor,
-        protected readonly selectionService: SelectionService
+        public editor: TextEditor,
+        protected readonly selectionService: SelectionService,
+        protected readonly labelProvider: LabelProvider,
+        // protected readonly editorProvider: TextEditorProvider
     ) {
         super(editor);
         this.toDispose.push(this.editor);
@@ -22,6 +24,22 @@ export class EditorWidget extends BaseWidget implements SaveableSource, Navigata
             if (this.editor.isFocused()) {
                 this.selectionService.selection = this.editor;
             }
+        });
+
+        this.editor.onDocumentRenamed(async newName => {
+            // this.editor.dispose();
+            this.title.label = this.labelProvider.getName(new URI(newName));
+
+            // this.editor = await this.editorProvider(new URI(newName));
+
+            // this.editor.refresh();
+
+            // this.toDispose.push(this.editor);
+            // this.editor.onSelectionChanged(() => {
+            //     if (this.editor.isFocused()) {
+            //         this.selectionService.selection = this.editor;
+            //     }
+            // });
         });
     }
 

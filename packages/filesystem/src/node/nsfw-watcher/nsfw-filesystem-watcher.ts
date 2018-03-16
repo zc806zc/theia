@@ -156,24 +156,24 @@ export class NsfwFileSystemWatcherServer implements FileSystemWatcherServer {
         this.pushFileChange(watcherId, path, FileChangeType.DELETED);
     }
 
-    protected pushRenamed(watcherId: number, path: string, path2: string): void {
-        this.debug('Renamed:', path, path2);
-        this.pushFileChange(watcherId, path, FileChangeType.RENAMED);
+    protected pushRenamed(watcherId: number, path: string, newPath: string): void {
+        this.debug('Renamed:', path, newPath);
+        this.pushFileChange(watcherId, path, FileChangeType.RENAMED, newPath);
     }
 
-    protected pushFileChange(watcherId: number, path: string, type: FileChangeType, oldPath?: string): void {
+    protected pushFileChange(watcherId: number, path: string, type: FileChangeType, newPath?: string): void {
         if (this.isIgnored(watcherId, path)) {
             return;
         }
-        if (oldPath && this.isIgnored(watcherId, oldPath)) {
+        if (newPath && this.isIgnored(watcherId, newPath)) {
             return;
         }
 
         const uri = FileUri.create(path).toString();
 
-        if (oldPath && type === FileChangeType.RENAMED) {
-            const oldUri = FileUri.create(oldPath).toString();
-            this.changes.push({ uri, oldUri, type });
+        if (newPath && type === FileChangeType.RENAMED) {
+            const newUri = FileUri.create(newPath).toString();
+            this.changes.push({ uri, newUri, type });
         } else {
             this.changes.push({ uri, type });
         }

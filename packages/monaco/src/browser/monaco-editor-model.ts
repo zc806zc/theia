@@ -34,6 +34,7 @@ export class MonacoEditorModel implements ITextEditorModel, TextEditorDocument {
 
     protected readonly onDidSaveModelEmitter = new Emitter<monaco.editor.IModel>();
     protected readonly onWillSaveModelEmitter = new Emitter<WillSaveModelEvent>();
+    protected readonly onRenameEmitter = new Emitter<string>();
 
     constructor(
         protected readonly resource: Resource,
@@ -46,6 +47,11 @@ export class MonacoEditorModel implements ITextEditorModel, TextEditorDocument {
         this.toDispose.push(this.onWillSaveModelEmitter);
         this.toDispose.push(this.onDirtyChangedEmitter);
         this.resolveModel = resource.readContents().then(content => this.initialize(content));
+        if (resource.onDidRename) {
+            this.toDispose.push(resource.onDidRename(name => {
+                this.onRenameEmitter.fire(name);
+            }));
+        }
     }
 
     dispose(): void {
@@ -64,6 +70,12 @@ export class MonacoEditorModel implements ITextEditorModel, TextEditorDocument {
             this.toDispose.push(this.model.onDidChangeContent(event => this.markAsDirty()));
             if (this.resource.onDidChangeContents) {
                 this.toDispose.push(this.resource.onDidChangeContents(() => this.sync()));
+            }
+
+            if (this.resource.onDidRename) {
+                this.toDispose.push(this.resource.onDidRename(name => {
+                    // this.textEditorModel.set
+                }));
             }
         }
     }
@@ -129,6 +141,10 @@ export class MonacoEditorModel implements ITextEditorModel, TextEditorDocument {
 
     get onWillSaveModel(): Event<WillSaveModelEvent> {
         return this.onWillSaveModelEmitter.event;
+    }
+
+    get onRename(): Event<string> {
+        return this.onRenameEmitter.event;
     }
 
     get onDidSaveModel(): Event<monaco.editor.IModel> {

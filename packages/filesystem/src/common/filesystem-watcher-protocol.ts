@@ -43,7 +43,7 @@ export interface DidFilesChangedParams {
 
 export interface FileChange {
     uri: string;
-    oldUri?: string;
+    newUri?: string;
     type: FileChangeType;
 }
 

@@ -43,6 +43,7 @@ export class MonacoEditor implements TextEditor, IEditorReference {
     protected readonly onSelectionChangedEmitter = new Emitter<Range>();
     protected readonly onFocusChangedEmitter = new Emitter<boolean>();
     protected readonly onDocumentContentChangedEmitter = new Emitter<TextEditorDocument>();
+    protected readonly onDocumentRenamedEmitter = new Emitter<string>();
 
     readonly documents = new Set<MonacoEditorModel>();
 
@@ -84,6 +85,7 @@ export class MonacoEditor implements TextEditor, IEditorReference {
             this.refresh();
             this.onDocumentContentChangedEmitter.fire(this.document);
         }));
+
         this.toDispose.push(codeEditor.onDidChangeCursorPosition(() =>
             this.onCursorPositionChangedEmitter.fire(this.cursor)
         ));
@@ -96,6 +98,11 @@ export class MonacoEditor implements TextEditor, IEditorReference {
         this.toDispose.push(codeEditor.onDidBlurEditor(() =>
             this.onFocusChangedEmitter.fire(this.isFocused())
         ));
+
+        this.document.onRename(async newName => {
+            // this.editor.setModel();
+            this.onDocumentRenamedEmitter.fire(newName);
+        });
     }
 
     getTargetUri(): URI | undefined {
@@ -108,6 +115,10 @@ export class MonacoEditor implements TextEditor, IEditorReference {
 
     get onDocumentContentChanged(): Event<TextEditorDocument> {
         return this.onDocumentContentChangedEmitter.event;
+    }
+
+    get onDocumentRenamed(): Event<string> {
+        return this.onDocumentRenamedEmitter.event;
     }
 
     get cursor(): Position {

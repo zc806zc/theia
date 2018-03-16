@@ -45,6 +45,7 @@ export class MonacoWorkspace extends BaseMonacoWorkspace implements lang.Workspa
     });
     protected readonly onWillSaveTextDocumentEmitter = new Emitter<TextDocumentWillSaveEvent>();
     protected readonly onDidSaveTextDocumentEmitter = new Emitter<TextDocument>();
+    protected readonly onDidRenameDocumentEmitter = new Emitter<string>();
 
     constructor(
         @inject(FileSystem) protected readonly fileSystem: FileSystem,
@@ -122,6 +123,10 @@ export class MonacoWorkspace extends BaseMonacoWorkspace implements lang.Workspa
 
     get onDidSaveTextDocument(): Event<TextDocument> {
         return this.onDidSaveTextDocumentEmitter.event;
+    }
+
+    get onRename(): Event<string> {
+        return this.onDidRenameDocumentEmitter.event;
     }
 
     protected onDidSaveModel(model: monaco.editor.IModel): void {

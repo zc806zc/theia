@@ -17,6 +17,7 @@ export {
 
 export interface FileChange {
     uri: URI;
+    newUri?: URI;
     type: FileChangeType;
 }
 
@@ -59,6 +60,7 @@ export class FileSystemWatcher implements Disposable {
     protected onDidFilesChanged(event: DidFilesChangedParams): void {
         const changes = event.changes.map(change => <FileChange>{
             uri: new URI(change.uri),
+            newUri: change.newUri ? change.newUri : undefined,
             type: change.type
         });
         this.onFileChangedEmitter.fire(changes);

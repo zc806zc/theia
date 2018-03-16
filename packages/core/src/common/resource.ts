@@ -17,6 +17,7 @@ export interface Resource extends Disposable {
     readContents(options?: { encoding?: string }): Promise<string>;
     saveContents?(content: string, options?: { encoding?: string }): Promise<void>;
     readonly onDidChangeContents?: Event<void>;
+    readonly onDidRename?: Event<string>;
 }
 
 export const ResourceResolver = Symbol('ResourceResolver');
