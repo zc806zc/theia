@@ -8,7 +8,7 @@
 import { injectable, inject, postConstruct } from "inversify";
 import { Git, Repository, WorkingDirectoryStatus } from '../common';
 import { Event, Emitter, DisposableCollection } from "@theia/core";
-import { GitRepositoryProvider } from './git-repository-provider';
+import { GitRepositoryProvider, GitRefreshOptions } from './git-repository-provider';
 import { GitWatcher, GitStatusChangeEvent } from "../common/git-watcher";
 
 /**
@@ -54,6 +54,10 @@ export class GitRepositoryTracker {
      */
     get selectedRepository(): Repository | undefined {
         return this.repositoryProvider.selectedRepository;
+    }
+
+    refresh(options?: GitRefreshOptions): Promise<void> {
+        return this.repositoryProvider.refresh(options);
     }
 
     /**

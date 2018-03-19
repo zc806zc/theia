@@ -9,14 +9,13 @@ import { injectable, inject, postConstruct } from 'inversify';
 import { h } from '@phosphor/virtualdom';
 import { Message } from '@phosphor/messaging';
 import URI from '@theia/core/lib/common/uri';
-import { MessageService, ResourceProvider, CommandService, DisposableCollection, MenuPath } from '@theia/core';
+import { MessageService, ResourceProvider, CommandService, MenuPath } from '@theia/core';
 import { VirtualRenderer, ContextMenuRenderer, VirtualWidget, LabelProvider, DiffUris } from '@theia/core/lib/browser';
 import { EditorManager, EditorWidget, EditorOpenerOptions } from '@theia/editor/lib/browser';
 import { WorkspaceService, WorkspaceCommands } from '@theia/workspace/lib/browser';
 import { Git, GitFileChange, GitFileStatus, Repository, WorkingDirectoryStatus } from '../common';
-import { GitWatcher, GitStatusChangeEvent } from '../common/git-watcher';
 import { GIT_RESOURCE_SCHEME } from './git-resource';
-import { GitRepositoryProvider } from './git-repository-provider';
+import { GitRepositoryTracker } from './git-repository-tracker';
 
 export const GIT_WIDGET_CONTEXT_MENU: MenuPath = ['git-widget-context-menu'];
 
@@ -45,7 +44,6 @@ export class GitWidget extends VirtualWidget {
     protected messageInputHighlighted: boolean = false;
     protected additionalMessage: string = '';
     protected status: WorkingDirectoryStatus | undefined;
-    protected toDispose = new DisposableCollection();
     protected scrollContainer: string;
 
     @inject(EditorManager)
@@ -53,12 +51,11 @@ export class GitWidget extends VirtualWidget {
 
     constructor(
         @inject(Git) protected readonly git: Git,
-        @inject(GitWatcher) protected readonly gitWatcher: GitWatcher,
         @inject(ContextMenuRenderer) protected readonly contextMenuRenderer: ContextMenuRenderer,
         @inject(ResourceProvider) protected readonly resourceProvider: ResourceProvider,
         @inject(MessageService) protected readonly messageService: MessageService,
         @inject(CommandService) protected readonly commandService: CommandService,
-        @inject(GitRepositoryProvider) protected readonly repositoryProvider: GitRepositoryProvider,
+        @inject(GitRepositoryTracker) protected readonly repositoryTracker: GitRepositoryTracker,
         @inject(LabelProvider) protected readonly labelProvider: LabelProvider,
         @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService) {
         super();
@@ -67,15 +64,11 @@ export class GitWidget extends VirtualWidget {
         this.scrollContainer = 'changesOuterContainer';
 
         this.addClass('theia-git');
-
     }
 
     @postConstruct()
     protected init() {
-        this.repositoryProvider.onDidChangeRepository(repository => {
-            this.initialize(repository);
-        });
-        this.initialize(this.repositoryProvider.selectedRepository);
+        this.initialize();
         this.update();
     }
 
@@ -89,27 +82,21 @@ export class GitWidget extends VirtualWidget {
         }
     }
 
-    async initialize(repository: Repository | undefined): Promise<void> {
-        if (repository) {
-            this.toDispose.dispose();
-            this.toDispose.push(await this.gitWatcher.watchGitChanges(repository));
-            this.toDispose.push(this.gitWatcher.onGitEvent(async gitEvent => {
-                if (GitStatusChangeEvent.is(gitEvent)) {
-                    this.status = gitEvent.status;
-                    this.updateView(gitEvent.status);
-                }
-            }));
-        }
+    async initialize(): Promise<void> {
+        this.toDispose.push(this.repositoryTracker.onGitEvent(gitEvent => {
+            this.status = gitEvent.status;
+            this.updateView(gitEvent.status);
+        }));
     }
 
-    protected async updateView(status: WorkingDirectoryStatus | undefined) {
+    protected async updateView(status: WorkingDirectoryStatus) {
         const stagedChanges = [];
         const unstagedChanges = [];
         const mergeChanges = [];
         if (status) {
             for (const change of status.changes) {
                 const uri = new URI(change.uri);
-                const repository = this.repositoryProvider.selectedRepository;
+                const repository = this.repositoryTracker.selectedRepository;
                 const [icon, label, description] = await Promise.all([
                     this.labelProvider.getIcon(uri),
                     this.labelProvider.getName(uri),
@@ -145,7 +132,7 @@ export class GitWidget extends VirtualWidget {
     }
 
     protected render(): h.Child {
-        const repository = this.repositoryProvider.selectedRepository;
+        const repository = this.repositoryTracker.selectedRepository;
 
         const messageInput = this.renderMessageInput();
         const messageTextarea = this.renderMessageTextarea();
@@ -189,7 +176,7 @@ export class GitWidget extends VirtualWidget {
             className: 'toolbar-button',
             title: 'Refresh',
             onclick: async e => {
-                await this.repositoryProvider.refresh();
+                await this.repositoryTracker.refresh();
             }
         }, h.i({ className: 'fa fa-refresh' }));
         const more = repository ? h.a({

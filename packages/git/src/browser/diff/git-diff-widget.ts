@@ -11,10 +11,10 @@ import URI from "@theia/core/lib/common/uri";
 import { VirtualRenderer, StatefulWidget, SELECTED_CLASS, DiffUris } from "@theia/core/lib/browser";
 import { EditorManager, EditorOpenerOptions, EditorWidget, DiffNavigatorProvider, DiffNavigator } from "@theia/editor/lib/browser";
 import { GitFileChange, GitFileStatus, Git, WorkingDirectoryStatus } from '../../common';
-import { GitWatcher } from "../../common";
 import { GIT_RESOURCE_SCHEME } from '../git-resource';
 import { GitNavigableListWidget } from "../git-navigable-list-widget";
 import { GitFileChangeNode } from "../git-widget";
+import { GitRepositoryTracker } from "../git-repository-tracker";
 
 // tslint:disable:no-null-keyword
 
@@ -30,7 +30,7 @@ export class GitDiffWidget extends GitNavigableListWidget<GitFileChangeNode> imp
     @inject(Git) protected readonly git: Git;
     @inject(DiffNavigatorProvider) protected readonly diffNavigatorProvider: DiffNavigatorProvider;
     @inject(EditorManager) protected readonly editorManager: EditorManager;
-    @inject(GitWatcher) protected readonly gitWatcher: GitWatcher;
+    @inject(GitRepositoryTracker) protected readonly repositoryTracker: GitRepositoryTracker;
 
     constructor() {
         super();
@@ -43,7 +43,7 @@ export class GitDiffWidget extends GitNavigableListWidget<GitFileChangeNode> imp
 
     @postConstruct()
     protected init() {
-        this.toDispose.push(this.gitWatcher.onGitEvent(async gitEvent => {
+        this.toDispose.push(this.repositoryTracker.onGitEvent(async gitEvent => {
             if (this.options) {
                 this.setContent(this.options);
             }

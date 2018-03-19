@@ -15,9 +15,8 @@ import { DisposableCollection } from '@theia/core/lib/common/disposable';
 import { PreferenceChangeEvent } from '@theia/core/lib/browser/preferences/preference-proxy';
 import { TreeDecorator, TreeDecoration } from '@theia/core/lib/browser/tree/tree-decorator';
 import { Git } from '../common/git';
-import { GitWatcher } from '../common/git-watcher';
 import { WorkingDirectoryStatus } from '../common/git-model';
-import { GitRepositoryProvider } from './git-repository-provider';
+import { GitRepositoryTracker } from './git-repository-tracker';
 import { GitFileChange, GitFileStatus } from '../common/git-model';
 import { GitPreferences, GitConfiguration } from './git-preferences';
 
@@ -34,19 +33,16 @@ export class GitDecorator implements TreeDecorator {
 
     constructor(
         @inject(Git) protected readonly git: Git,
-        @inject(GitRepositoryProvider) protected readonly repositoryProvider: GitRepositoryProvider,
-        @inject(GitWatcher) protected readonly watcher: GitWatcher,
+        @inject(GitRepositoryTracker) protected readonly repositoryTracker: GitRepositoryTracker,
         @inject(GitPreferences) protected readonly preferences: GitPreferences,
-        @inject(ILogger) protected readonly logger: ILogger) {
+        @inject(ILogger) protected readonly logger: ILogger,
+    ) {
         this.emitter = new Emitter();
         this.toDispose = new DisposableCollection();
-        repositoryProvider.onDidChangeRepository(async repository => {
+        repositoryTracker.onDidChangeRepository(async repository => {
             this.toDispose.dispose();
             if (repository) {
-                this.toDispose.pushAll([
-                    await this.watcher.watchGitChanges(repository),
-                    this.watcher.onGitEvent(event => this.fireDidChangeDecorations((tree: Tree) => this.collectDecorators(tree, event.status)))
-                ]);
+                this.toDispose.push(repositoryTracker.onGitEvent(event => this.fireDidChangeDecorations((tree: Tree) => this.collectDecorators(tree, event.status))));
             }
         });
         this.preferences.onPreferenceChanged(event => this.handlePreferenceChange(event));
@@ -162,7 +158,7 @@ export class GitDecorator implements TreeDecorator {
                 refresh = true;
             }
         }
-        const repository = this.repositoryProvider.selectedRepository;
+        const repository = this.repositoryTracker.selectedRepository;
         if (refresh && repository) {
             const status = await this.git.status(repository);
             this.fireDidChangeDecorations((tree: Tree) => this.collectDecorators(tree, status));
