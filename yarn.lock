@@ -3386,6 +3386,10 @@ fast-levenshtein@~2.0.4:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
 
+fast-plist@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/fast-plist/-/fast-plist-0.1.2.tgz#a45aff345196006d406ca6cdcd05f69051ef35b8"
+
 fastparse@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/fastparse/-/fastparse-1.1.1.tgz#d1e2643b38a94d7583b479060e6c4affc94071f8"
@@ -5938,6 +5942,12 @@ monaco-languages@^1.0.4:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/monaco-languages/-/monaco-languages-1.2.0.tgz#125e6b6fb5e51239493e1a6d5cc99b7572382f75"
 
+monaco-textmate@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/monaco-textmate/-/monaco-textmate-1.0.1.tgz#b3829101e5a68300323d754d8eeffd65707c34d3"
+  dependencies:
+    fast-plist "^0.1.2"
+
 monaco-typescript@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/monaco-typescript/-/monaco-typescript-3.1.0.tgz#522c7e578a358bd855e4161227e5e258e2c9b1c7"
@@ -6383,6 +6393,12 @@ onetime@^2.0.0:
   resolved "https://registry.yarnpkg.com/onetime/-/onetime-2.0.1.tgz#067428230fd67443b2794b22bba528b6867962d4"
   dependencies:
     mimic-fn "^1.0.0"
+
+onigasm@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/onigasm/-/onigasm-1.3.0.tgz#7d104f6dc2f3ca4ab972a8c4f708bcc1054e4e66"
+  dependencies:
+    lru-cache "^4.1.1"
 
 optimist@^0.6.1, optimist@~0.6.1:
   version "0.6.1"
