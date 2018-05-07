@@ -29,6 +29,7 @@ const webpack = require('webpack');
 const yargs = require('yargs');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const outputPath = path.resolve(__dirname, 'lib');
 const { mode }  = yargs.option('mode', {
@@ -91,7 +92,7 @@ module.exports = {
                 test: /\\.js$/,
                 enforce: 'pre',
                 loader: 'source-map-loader',
-                exclude: /jsonc-parser/
+                exclude: /jsonc-parser|fast-plist/
             },
             {
                 test: /\\.woff(2)?(\\?v=[0-9]\\.[0-9]\\.[0-9])?$/,
@@ -100,6 +101,11 @@ module.exports = {
             {
                 test: /node_modules[\\\\|\/](vscode-languageserver-types|vscode-uri|jsonc-parser)/,
                 use: { loader: 'umd-compat-loader' }
+            },
+            {
+                test: /\.wasm$/,
+                loader: "file-loader",
+                type: "javascript/auto",
             }
         ]
     },
@@ -136,6 +142,8 @@ module.exports = {
         new CircularDependencyPlugin({
             exclude: /(node_modules|examples)\\/./,
             failOnError: false // https://github.com/nodejs/readable-stream/issues/280#issuecomment-297076462
+        }),
+        new MonacoWebpackPlugin({
         })
     ],
     stats: {

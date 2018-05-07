@@ -1650,6 +1650,14 @@ cache-base@^1.0.1:
 cacheable-request@^2.1.1:
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/cacheable-request/-/cacheable-request-2.1.4.tgz#0d808801b6342ad33c91df9d0b44dc09b91e5c3d"
+  dependencies:
+    clone-response "1.0.2"
+    get-stream "3.0.0"
+    http-cache-semantics "3.8.1"
+    keyv "3.0.0"
+    lowercase-keys "1.0.0"
+    normalize-url "2.0.1"
+    responselike "1.0.2"
 
 caching-transform@^1.0.0:
   version "1.0.1"
@@ -1956,6 +1964,12 @@ cliui@^4.0.0:
 clone-buffer@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/clone-buffer/-/clone-buffer-1.0.0.tgz#e3e25b207ac4e701af721e2cb5a16792cac3dc58"
+
+clone-response@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/clone-response/-/clone-response-1.0.2.tgz#d1dc973920314df67fbeb94223b4ee350239e96b"
+  dependencies:
+    mimic-response "^1.0.0"
 
 clone-stats@^0.0.1:
   version "0.0.1"
@@ -3755,7 +3769,7 @@ get-stdin@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-4.0.1.tgz#b968c6b0a04384324902e8bf1a5df32579a450fe"
 
-get-stream@^3.0.0:
+get-stream@3.0.0, get-stream@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/get-stream/-/get-stream-3.0.0.tgz#8e943d1358dc37555054ecbe2edb05aa174ede14"
 
@@ -4295,6 +4309,10 @@ htmlparser2@^3.9.0:
     entities "^1.1.1"
     inherits "^2.0.1"
     readable-stream "^2.0.2"
+
+http-cache-semantics@3.8.1:
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-3.8.1.tgz#39b0e16add9b605bf0a9ef3d9daaf4843b4cacd2"
 
 http-errors@1.6.2:
   version "1.6.2"
@@ -4998,6 +5016,10 @@ jsmin@1.x:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/jsmin/-/jsmin-1.0.1.tgz#e7bd0dcd6496c3bf4863235bf461a3d98aa3b98c"
 
+json-buffer@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/json-buffer/-/json-buffer-3.0.0.tgz#5b1f397afc75d677bde8bcfc0e47e1f9a3d9a898"
+
 json-parse-better-errors@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
@@ -5087,6 +5109,12 @@ jxLoader@*:
 kew@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/kew/-/kew-0.7.0.tgz#79d93d2d33363d6fdd2970b335d9141ad591d79b"
+
+keyv@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/keyv/-/keyv-3.0.0.tgz#44923ba39e68b12a7cec7df6c3268c031f2ef373"
+  dependencies:
+    json-buffer "3.0.0"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
@@ -5543,6 +5571,10 @@ lower-case@^1.1.0, lower-case@^1.1.1, lower-case@^1.1.2:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/lower-case/-/lower-case-1.1.4.tgz#9a2cabd1b9e8e0ae993a4bf7d5875c39c42e8eac"
 
+lowercase-keys@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-1.0.0.tgz#4e3366b39e7f5457e35f1324bdf6f88d0bfc7306"
+
 lowercase-keys@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/lowercase-keys/-/lowercase-keys-1.0.1.tgz#6f9e30b47084d971a7c820ff15a6c5167b74c26f"
@@ -5921,6 +5953,14 @@ monaco-editor-core@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-core/-/monaco-editor-core-0.12.0.tgz#185c4233907582b78472fe30bad13af7ad6e8d8e"
 
+monaco-editor-textmate@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/monaco-editor-textmate/-/monaco-editor-textmate-1.0.2.tgz#31e57a49dc7fd7b7303b210838510c2d1f351b73"
+
+monaco-editor-webpack-plugin@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.2.0.tgz#8d0b6bb1986350b714f6de409ca438ef93ebe650"
+
 monaco-html@^2.0.2:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/monaco-html/-/monaco-html-2.1.0.tgz#b7280c034e4acb6179cb6ca62d573cb7e9eaaa18"
@@ -5942,9 +5982,9 @@ monaco-languages@^1.0.4:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/monaco-languages/-/monaco-languages-1.2.0.tgz#125e6b6fb5e51239493e1a6d5cc99b7572382f75"
 
-monaco-textmate@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/monaco-textmate/-/monaco-textmate-1.0.1.tgz#b3829101e5a68300323d754d8eeffd65707c34d3"
+monaco-textmate@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/monaco-textmate/-/monaco-textmate-2.0.0.tgz#4c349ac6a85b2ba4c3a874c1909aee1158214777"
   dependencies:
     fast-plist "^0.1.2"
 
@@ -6199,6 +6239,14 @@ normalize-range@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/normalize-range/-/normalize-range-0.1.2.tgz#2d10c06bdfd312ea9777695a4d28439456b75942"
 
+normalize-url@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-2.0.1.tgz#835a9da1551fa26f70e92329069a23aa6574d7e6"
+  dependencies:
+    prepend-http "^2.0.0"
+    query-string "^5.0.1"
+    sort-keys "^2.0.0"
+
 normalize-url@^1.4.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-1.9.1.tgz#2cc0d66b31ea23036458436e3620d85954c66c3c"
@@ -6394,9 +6442,9 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-onigasm@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/onigasm/-/onigasm-1.3.0.tgz#7d104f6dc2f3ca4ab972a8c4f708bcc1054e4e66"
+onigasm@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/onigasm/-/onigasm-1.3.1.tgz#765e8df42b078338f09db9420b55276b4cd1ce02"
   dependencies:
     lru-cache "^4.1.1"
 
@@ -7200,6 +7248,14 @@ query-string@^4.1.0:
     object-assign "^4.1.0"
     strict-uri-encode "^1.0.0"
 
+query-string@^5.0.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-5.1.1.tgz#a78c012b71c17e05f2e3fa2319dd330682efb3cb"
+  dependencies:
+    decode-uri-component "^0.2.0"
+    object-assign "^4.1.0"
+    strict-uri-encode "^1.0.0"
+
 querystring-es3@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/querystring-es3/-/querystring-es3-0.2.1.tgz#9ec61f79049875707d69414596fd907a4d711e73"
@@ -7709,6 +7765,12 @@ resolve@^1.1.6, resolve@^1.3.2:
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.7.1.tgz#aadd656374fd298aee895bc026b8297418677fd3"
   dependencies:
     path-parse "^1.0.5"
+
+responselike@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/responselike/-/responselike-1.0.2.tgz#918720ef3b631c5642be068f15ade5a46f4ba1e7"
+  dependencies:
+    lowercase-keys "^1.0.0"
 
 restore-cursor@^1.0.1:
   version "1.0.1"
