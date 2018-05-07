@@ -12,7 +12,6 @@ import {
     MAIN_MENU_BAR, MenuModelRegistry, MenuPath
 } from '../../common';
 import { KeybindingRegistry, Keybinding, KeyCode, Key } from '../../browser';
-
 @injectable()
 export class ElectronMainMenuFactory {
 
@@ -72,6 +71,7 @@ export class ElectronMainMenuFactory {
                 }
 
                 items.push({
+                    id: menu.id,
                     label: menu.label,
                     icon: menu.icon,
                     enabled: true, // https://github.com/theia-ide/theia/issues/446
@@ -142,6 +142,14 @@ export class ElectronMainMenuFactory {
     }
 
     protected execute(command: string): void {
+        const handler = this.commandRegistry.getToggledHandler(command);
+        if (handler && handler.isToggled) {
+            const menu = electron.remote.Menu.getApplicationMenu();
+            if (menu) {
+                menu.getMenuItemById(command).checked = handler.isToggled();
+            }
+            electron.remote.Menu.setApplicationMenu(menu);
+        }
         this.commandRegistry.executeCommand(command).catch(() => { /* no-op */ });
     }
 
