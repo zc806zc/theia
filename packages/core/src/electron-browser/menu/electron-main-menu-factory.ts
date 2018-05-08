@@ -74,6 +74,8 @@ export class ElectronMainMenuFactory {
                     id: menu.id,
                     label: menu.label,
                     icon: menu.icon,
+                    type: this.commandRegistry.getToggledHandler(menu.action.commandId) ? "checkbox" : "normal",
+                    is
                     enabled: true, // https://github.com/theia-ide/theia/issues/446
                     visible: true,
                     click: () => this.execute(menu.action.commandId),
@@ -142,15 +144,9 @@ export class ElectronMainMenuFactory {
     }
 
     protected execute(command: string): void {
-        const handler = this.commandRegistry.getToggledHandler(command);
-        if (handler && handler.isToggled) {
-            const menu = electron.remote.Menu.getApplicationMenu();
-            if (menu) {
-                menu.getMenuItemById(command).checked = handler.isToggled();
-            }
-            electron.remote.Menu.setApplicationMenu(menu);
-        }
         this.commandRegistry.executeCommand(command).catch(() => { /* no-op */ });
+        const menu = electron.remote.Menu.getApplicationMenu();
+        electron.remote.Menu.setApplicationMenu(menu);
     }
 
     protected createOSXMenu(): Electron.MenuItemConstructorOptions {
