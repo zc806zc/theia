@@ -20,7 +20,6 @@ import {
     TextEditor,
     RevealRangeOptions,
     RevealPositionOptions,
-    EditorDecorationsService,
     DeltaDecorationParams,
 } from '@theia/editor/lib/browser';
 import { MonacoEditorModel } from "./monaco-editor-model";
@@ -56,7 +55,6 @@ export class MonacoEditor implements TextEditor, IEditorReference {
         readonly node: HTMLElement,
         protected readonly m2p: MonacoToProtocolConverter,
         protected readonly p2m: ProtocolToMonacoConverter,
-        protected readonly decorationsService: EditorDecorationsService,
         options?: MonacoEditor.IOptions,
         override?: IEditorOverrideServices,
     ) {
