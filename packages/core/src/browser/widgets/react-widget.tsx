@@ -1,27 +1,34 @@
 /*
- * Copyright (C) 2017 TypeFox and others.
+ * Copyright (C) 2018 TypeFox and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
+import * as ReactDOM from "react-dom";
+import * as React from "react";
 import { injectable } from "inversify";
-import { h } from "@phosphor/virtualdom";
-import { DisposableCollection } from "../../common";
+import { DisposableCollection, Disposable, MaybeArray } from "../../common";
 import { BaseWidget, Message } from "./widget";
-import { VirtualRenderer } from "./virtual-renderer";
+import { ReactElement } from "react";
 
-/*
- * @deprecated use ReactWidget instead.
- */
 @injectable()
-export class VirtualWidget extends BaseWidget {
+export abstract class ReactWidget extends BaseWidget {
 
     protected readonly onRender = new DisposableCollection();
     protected childContainer?: HTMLElement;
     protected scrollOptions = {
         suppressScrollX: true
     };
+
+    constructor() {
+        super();
+        this.toDispose.push(Disposable.create(() => {
+            if (this.childContainer) {
+                ReactDOM.unmountComponentAtNode(this.childContainer);
+            }
+        }));
+    }
 
     protected onUpdateRequest(msg: Message): void {
         super.onUpdateRequest(msg);
@@ -35,14 +42,13 @@ export class VirtualWidget extends BaseWidget {
                 this.childContainer = this.node;
             }
         }
-        VirtualRenderer.render(child, this.childContainer);
-        this.onRender.dispose();
+
+        const widget = <React.Fragment>{child}</React.Fragment>;
+
+        ReactDOM.render(widget, this.childContainer, () => this.onRender.dispose());
     }
 
-    protected render(): h.Child {
-        // tslint:disable-next-line:no-null-keyword
-        return null;
-    }
+    protected abstract render(): MaybeArray<ReactElement<any>>;
 
     protected createChildContainer(): HTMLElement {
         return document.createElement('div');
