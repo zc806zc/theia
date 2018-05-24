@@ -50,6 +50,7 @@
     "test:ui": "wdio wdio.conf.js"
   },
   "devDependencies": {
-    "@theia/cli": "^0.3.10"
+    "@theia/cli": "^0.3.10",
+    "monaco-editor-webpack-plugin": "^1.2.0"
   }
 }

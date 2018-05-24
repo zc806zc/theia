@@ -12,6 +12,7 @@ import { wireTmGrammars } from 'monaco-editor-textmate';
 import { ContributionProvider, ILogger, Disposable, DisposableCollection } from "@theia/core";
 import { TextmateRegistry } from "./textmate-registry";
 import { MonacoTextModelService } from "@theia/monaco/lib/browser/monaco-text-model-service";
+import * as monaco from 'monaco-editor';
 
 @injectable()
 export class MonacoTextmateService implements Disposable {

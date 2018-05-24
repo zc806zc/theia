@@ -5953,13 +5953,21 @@ monaco-editor-core@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-core/-/monaco-editor-core-0.12.0.tgz#185c4233907582b78472fe30bad13af7ad6e8d8e"
 
-monaco-editor-textmate@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/monaco-editor-textmate/-/monaco-editor-textmate-1.0.2.tgz#31e57a49dc7fd7b7303b210838510c2d1f351b73"
+monaco-editor-textmate@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/monaco-editor-textmate/-/monaco-editor-textmate-1.0.3.tgz#22f43397b0d3619a9789a5912fc9147e743d4b12"
 
 monaco-editor-webpack-plugin@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.2.0.tgz#8d0b6bb1986350b714f6de409ca438ef93ebe650"
+
+monaco-editor@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.12.0.tgz#cd8621017526b57746245104d764bbf52ad42283"
+
+monaco-editor@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.13.1.tgz#6b9ce20e4d1c945042d256825eb133cb23315a52"
 
 monaco-html@^2.0.2:
   version "2.1.0"

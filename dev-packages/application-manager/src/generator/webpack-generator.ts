@@ -39,7 +39,8 @@ const { mode }  = yargs.option('mode', {
 }).argv;
 const development = mode === 'development';${this.ifMonaco(() => `
 
-const monacoEditorPath = development ? '${this.resolve('monaco-editor-core', 'dev/vs')}' : '${this.resolve('monaco-editor-core', 'min/vs')}';
+const monacoEditorPath = development ? '${this.resolve('monaco-editor', 'dev/vs')}' : '${this.resolve('monaco-editor', 'esm/vs')}';
+const monacoEditorCorePath = development ? '${this.resolve('monaco-editor-core', 'dev/vs')}' : '${this.resolve('monaco-editor-core', 'min/vs')}';
 const monacoLanguagesPath = '${this.resolve('monaco-languages', 'release/min')}';
 const monacoCssLanguagePath = '${this.resolve('monaco-css', 'release/min')}';
 const monacoJsonLanguagePath = '${this.resolve('monaco-json', 'release/min')}';
@@ -92,7 +93,7 @@ module.exports = {
                 test: /\\.js$/,
                 enforce: 'pre',
                 loader: 'source-map-loader',
-                exclude: /jsonc-parser|fast-plist/
+                exclude: /jsonc-parser|fast-plist|(monaco-editor.*)/
             },
             {
                 test: /\\.woff(2)?(\\?v=[0-9]\\.[0-9]\\.[0-9])?$/,
