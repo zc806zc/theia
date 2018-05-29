@@ -52,7 +52,6 @@
     "coverage": "yarn coverage:compile && yarn test && yarn coverage:remap && yarn coverage:report:lcov && yarn coverage:report:html"
   },
   "devDependencies": {
-    "@theia/cli": "^0.3.10",
-    "monaco-editor-webpack-plugin": "^1.2.0"
+    "@theia/cli": "^0.3.10"
   }
 }

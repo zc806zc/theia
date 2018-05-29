@@ -10,6 +10,7 @@
     "@theia/markers": "^0.3.10",
     "@theia/outline-view": "^0.3.10",
     "@theia/workspace": "^0.3.10",
+    "monaco-editor": "^0.13.1",
     "monaco-css": "^2.0.1",
     "monaco-html": "^2.0.2",
     "monaco-json": "^2.0.1",
