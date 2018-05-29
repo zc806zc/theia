@@ -7,9 +7,10 @@
 
 import { injectable, inject, named } from 'inversify';
 import { ILogger } from '@theia/core/lib/common/';
-import { ProcessType, TaskInfo } from '../common/task-protocol';
-import { TaskManager } from './task-manager';
+import { TaskManager } from '../task-manager';
+import { ProcessType, TaskInfo } from '../../common/task-protocol';
 import { Process, ProcessManager } from "@theia/process/lib/node";
+import { AbstractTask } from '../abstract-task';
 
 export const TaskProcessOptions = Symbol("TaskProcessOptions");
 export interface TaskProcessOptions {
@@ -21,26 +22,23 @@ export interface TaskProcessOptions {
 }
 
 export const TaskFactory = Symbol("TaskFactory");
-export type TaskFactory = (options: TaskProcessOptions) => Task;
+export type TaskFactory = (options: TaskProcessOptions) => ProcessTask;
 
 @injectable()
-export class Task {
-    protected taskId: number;
-
+export class ProcessTask extends AbstractTask {
     constructor(
         @inject(TaskManager) protected readonly taskManager: TaskManager,
         @inject(ILogger) @named('task') protected readonly logger: ILogger,
         @inject(TaskProcessOptions) protected readonly options: TaskProcessOptions,
         @inject(ProcessManager) protected readonly processManager: ProcessManager
     ) {
-        this.taskId = this.taskManager.register(this, this.options.context);
+        super(taskManager, logger, options);
 
         const toDispose =
             this.process.onExit(event => {
                 this.taskManager.delete(this);
                 toDispose.dispose();
             });
-        this.logger.info(`Created new task, id: ${this.id}, process id: ${this.options.process.id}, OS PID: ${this.process.pid}, context: ${this.context}`);
     }
 
     /** terminates the task */
@@ -62,17 +60,10 @@ export class Task {
     getRuntimeInfo(): TaskInfo {
         return {
             taskId: this.id,
-            osProcessId: this.process.pid,
             terminalId: (this.processType === 'terminal') ? this.process.id : undefined,
-            processId: (this.processType === 'raw') ? this.process.id : undefined,
-            command: this.command,
             label: this.label,
             ctx: this.context
         };
-    }
-
-    get command() {
-        return this.options.command;
     }
     get process() {
         return this.options.process;
