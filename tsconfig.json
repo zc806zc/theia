@@ -3,6 +3,7 @@
   "compilerOptions": {
     "skipLibCheck": false,
     "baseUrl": ".",
+
     "paths": {
       "@theia/application-package": [
         "dev-packages/application-package/src"
