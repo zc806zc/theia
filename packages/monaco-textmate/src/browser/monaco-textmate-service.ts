@@ -8,33 +8,37 @@
 import { injectable, inject, named } from "inversify";
 import { LanguageGrammarDefinitionContribution } from "./textmate-contribution";
 import { Registry } from 'monaco-textmate';
-// import { wireTmGrammars } from 'monaco-editor-textmate';
 import { ContributionProvider, ILogger, Disposable, DisposableCollection } from "@theia/core";
 import { TextmateRegistry } from "./textmate-registry";
 import { MonacoTextModelService } from "@theia/monaco/lib/browser/monaco-text-model-service";
+// import { wireTmGrammars } from 'monaco-editor-textmate';
 // import * as monaco from 'monaco-editor';
 
 @injectable()
 export class MonacoTextmateService implements Disposable {
 
+    protected readonly toDispose = new DisposableCollection();
+
     protected textmateRegistry: Registry;
+
     @inject(ContributionProvider) @named(LanguageGrammarDefinitionContribution)
     protected readonly grammarProviders: ContributionProvider<LanguageGrammarDefinitionContribution>;
-    @inject(TextmateRegistry) protected readonly theiaRegistry: TextmateRegistry;
-    @inject(MonacoTextModelService) protected readonly monacoModelService: MonacoTextModelService;
-    @inject(ILogger) protected readonly logger: ILogger;
 
-    protected readonly toDispose = new DisposableCollection();
+    @inject(TextmateRegistry)
+    protected readonly theiaRegistry: TextmateRegistry;
+
+    @inject(MonacoTextModelService)
+    protected readonly monacoModelService: MonacoTextModelService;
+
+    @inject(ILogger)
+    protected readonly logger: ILogger;
 
     constructor() { }
 
     init() {
-        // this.grammarDefinition = grammarProviders.getContributions().map(grammarProvider =>
-        //     grammarProvider.getGrammarDefinition()
-        // );
-        this.grammarProviders.getContributions().forEach(grammarProvider => {
+        for (const grammarProvider of this.grammarProviders.getContributions()) {
             grammarProvider.registerTextmateLanguage(this.theiaRegistry);
-        });
+        }
 
         this.textmateRegistry = new Registry({
             getGrammarDefinition: async (scopeName: string, dependentScope: string) => {
@@ -65,7 +69,7 @@ export class MonacoTextmateService implements Disposable {
         this.toDispose.push(this.monacoModelService.onDidCreate(model => {
             setTimeout(() => {
                 this.activateLanguage(model.languageId);
-            }, 5000);
+            }, 2000);
         }));
     }
 
@@ -80,7 +84,7 @@ export class MonacoTextmateService implements Disposable {
         }
 
         try {
-            await wireTmGrammars(monaco, this.textmateRegistry, new Map([[languageId, scopeName]]));
+            await wireTmGrammars(monaco as any, this.textmateRegistry, new Map([[languageId, scopeName]]));
         } catch (err) {
             this.logger.warn('No grammar for this language id', languageId);
         }
@@ -108,7 +112,6 @@ class TokenizerState implements monaco.languages.IState {
     }
 
     public equals(other: monaco.languages.IState): boolean {
-        console.log('HEEEEEEEL');
         if (!other ||
             !(other instanceof TokenizerState) ||
             other !== this ||
@@ -136,8 +139,15 @@ export function wireTmGrammars(monaco: any, registry: Registry, languages: Map<s
                     getInitialState: () => new TokenizerState(INITIAL),
                     tokenize: (line: string, state: TokenizerState) => {
                         const res = grammar.tokenizeLine(line, state.ruleStack);
+                        // console.log(state.ruleStack);
+                        // console.log(res.tokens.map(token => token.scopes));
+
+                        console.log(res.tokens.map(
+                            token => `"${line.slice(token.startIndex, token.endIndex)}": ${token.scopes.join(' ')}`
+                        ));
+
                         return {
-                            endState: res.ruleStack,
+                            endState: new TokenizerState(res.ruleStack),
                             tokens: res.tokens.map(token => ({
                                 ...token,
                                 // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes

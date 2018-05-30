@@ -11,7 +11,7 @@
 
 const userAgent = typeof navigator !== 'undefined' ? navigator.userAgent : "";
 
-export const isIE = (userAgent.indexOf('Trident') >= 0);
+export const isIE: boolean = (userAgent.indexOf('Trident') >= 0);
 export const isEdge = (userAgent.indexOf('Edge/') >= 0);
 export const isEdgeOrIE = isIE || isEdge;
 
