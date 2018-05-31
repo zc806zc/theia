@@ -32,9 +32,7 @@ function setUpEnvVariables(optionsEnv?:  { [key: string]: string | null }): Node
     if (optionsEnv) {
         for (const envName of Object.keys(optionsEnv)) {
             const envValue = optionsEnv[envName];
-            if (envValue) {
-                prEnv[envName] = envValue;
-            }
+            prEnv[envName] = envValue || '';
         }
     }
 

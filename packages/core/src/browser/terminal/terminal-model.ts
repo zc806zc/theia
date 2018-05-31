@@ -5,7 +5,7 @@
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import { Disposable } from "../../common";
+import { Disposable } from '../../common';
 
 /**
  * Terminal model describes interfaces for creation and using terminal widget.
@@ -14,21 +14,21 @@ import { Disposable } from "../../common";
 /**
  * Terminal widget options.
  */
-export const TerminalWidgetOptions = Symbol("TerminalWidgetOptions");
+export const TerminalWidgetOptions = Symbol('TerminalWidgetOptions');
 export interface TerminalWidgetOptions {
 
     /**
      * Human readable terminal representation on the UI.
      */
-    readonly title?: string ;
+    readonly title?: string;
 
     /**
-     * Path to the executable shell. For example: "/bin/bash", "bash", "sh".
+     * Path to the executable shell. For example: `/bin/bash`, `bash`, `sh`.
      */
     readonly shellPath?: string;
 
     /**
-     * Shell arguments to executable shell, for example: ["-l"] - without login.
+     * Shell arguments to executable shell, for example: [`-l`] - without login.
      */
     readonly shellArgs?: string[];
 
@@ -43,29 +43,29 @@ export interface TerminalWidgetOptions {
     readonly env?: { [key: string]: string | null };
 
     /**
-     * In case "destroyTermOnClose" is true - terminal process will be destroyed on close terminal widget, otherwise will be keeped
+     * In case `destroyTermOnClose` is true - terminal process will be destroyed on close terminal widget, otherwise will be kept
      * alive.
      */
-    destroyTermOnClose?: boolean;
+    readonly destroyTermOnClose?: boolean;
 
     /**
-     * Terminal server side can send to the client "terminal title" to display this value on the UI. If
-     * overrideTitle = true, we skip this title and use our own custom title, defined by "title" argument.
+     * Terminal server side can send to the client `terminal title` to display this value on the UI. If
+     * overrideTitle = true, we skip this title and use our own custom title, defined by 'title' argument.
      * If overrideTitle = false, we are using terminal title from the server side.
      */
-    overrideTitle?: boolean;
+    readonly overrideTitle?: boolean;
 
     /**
      * Terminal id. Should be unique for all DOM.
      */
-    id?: string;
+    readonly id?: string;
 }
 
 /**
  * Terminal UI widget.
  */
-export const TerminalWidget = Symbol("TerminalWidget");
-export interface TerminalWidget {
+export const TerminalWidget = Symbol('TerminalWidget');
+export interface TerminalWidget extends Disposable {
     /**
      * Start terminal and return terminal id.
      */
@@ -76,11 +76,6 @@ export interface TerminalWidget {
      * @param text - text content.
      */
     sendText(text: string): void;
-
-    /**
-     * Destroy terminal widget.
-     */
-    dispose(): void;
 
     /**
      * Apply disposable object where are described actions to do when terminal is closed.

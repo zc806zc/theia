@@ -404,7 +404,7 @@ export class TerminalWidgetImpl extends BaseWidget implements TerminalWidget, St
     }
 
     private async doResize() {
-        await Promise.all([this.waitForTermOpened.promise]);
+        await this.waitForTermOpened.promise;
         const geo = this.term.proposeGeometry();
         this.cols = geo.cols;
         this.rows = geo.rows - 1; // subtract one row for margin
