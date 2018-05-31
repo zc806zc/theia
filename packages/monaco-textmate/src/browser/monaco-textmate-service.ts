@@ -12,7 +12,7 @@ import { ContributionProvider, ILogger, Disposable, DisposableCollection } from 
 import { TextmateRegistry } from "./textmate-registry";
 import { MonacoTextModelService } from "@theia/monaco/lib/browser/monaco-text-model-service";
 // import { wireTmGrammars } from 'monaco-editor-textmate';
-// import * as monaco from 'monaco-editor';
+import * as monacoNmsp from 'monaco-editor';
 
 @injectable()
 export class MonacoTextmateService implements Disposable {
@@ -88,6 +88,8 @@ export class MonacoTextmateService implements Disposable {
         } catch (err) {
             this.logger.warn('No grammar for this language id', languageId);
         }
+
+        // console.log((<any>monacoNmsp.editor.getModels()[0])._tokens.tokenizationSupport);
     }
 
     dispose(): void {
@@ -96,8 +98,9 @@ export class MonacoTextmateService implements Disposable {
 }
 
 import { StackElement, INITIAL } from 'monaco-textmate';
+// const grammarjs = require('monaco-textmate/dist/grammar');
 
-class TokenizerState implements monaco.languages.IState {
+class TokenizerState implements monacoNmsp.languages.IState {
 
     constructor(
         private _ruleStack: StackElement
@@ -130,7 +133,7 @@ class TokenizerState implements monaco.languages.IState {
  * @param registry TmGrammar `Registry` this wiring should rely on to provide the grammars
  * @param languages `Map` of language ids (string) to TM names (string)
  */
-export function wireTmGrammars(monaco: any, registry: Registry, languages: Map<string, string>) {
+export function wireTmGrammars(monaco: typeof monacoNmsp, registry: Registry, languages: Map<string, string>) {
     return Promise.all(
         Array.from(languages.keys())
             .map(async languageId => {
@@ -142,16 +145,17 @@ export function wireTmGrammars(monaco: any, registry: Registry, languages: Map<s
                         // console.log(state.ruleStack);
                         // console.log(res.tokens.map(token => token.scopes));
 
-                        console.log(res.tokens.map(
-                            token => `"${line.slice(token.startIndex, token.endIndex)}": ${token.scopes.join(' ')}`
-                        ));
+                        // console.log(res.tokens.map(
+                        //     token => `"${line.slice(token.startIndex, token.endIndex)}": ${token.scopes.join(' ')}`
+                        // ));
 
                         return {
                             endState: new TokenizerState(res.ruleStack),
                             tokens: res.tokens.map(token => ({
                                 ...token,
                                 // TODO: At the moment, monaco-editor doesn't seem to accept array of scopes
-                                scopes: token.scopes[token.scopes.length - 1]
+                                scopes: /* */ token.scopes[token.scopes.length - 1] /*/ token.scopes.join('#') // */
+                                // scopes: token.scopes as any,
                             })),
                         };
                     }
