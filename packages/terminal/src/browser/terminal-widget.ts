@@ -96,7 +96,7 @@ export class TerminalWidget extends BaseWidget implements StatefulWidget {
         const cssProps = this.getCSSPropertiesFromPage();
 
         this.term = new Xterm.Terminal({
-            cursorBlink: true,
+            cursorBlink: false,
             fontFamily: cssProps.fontFamily,
             fontSize: cssProps.fontSize,
             theme: {
@@ -341,6 +341,7 @@ export class TerminalWidget extends BaseWidget implements StatefulWidget {
             return;
         }
         this.toDisposeOnConnect.dispose();
+        this.toDispose.push(this.toDisposeOnConnect);
         this.webSocketConnectionProvider.listen({
             path: `${terminalsPath}/${this.terminalId}`,
             onConnection: connection => {

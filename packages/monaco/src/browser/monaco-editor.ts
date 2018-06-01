@@ -22,6 +22,7 @@ import {
     RevealPositionOptions,
     EditorDecorationsService,
     DeltaDecorationParams,
+    ReplaceTextParams,
 } from '@theia/editor/lib/browser';
 import { MonacoEditorModel } from "./monaco-editor-model";
 
@@ -29,6 +30,7 @@ import IEditorConstructionOptions = monaco.editor.IEditorConstructionOptions;
 import IModelDeltaDecoration = monaco.editor.IModelDeltaDecoration;
 import IEditorOverrideServices = monaco.editor.IEditorOverrideServices;
 import IStandaloneCodeEditor = monaco.editor.IStandaloneCodeEditor;
+import IIdentifiedSingleEditOperation = monaco.editor.IIdentifiedSingleEditOperation;
 import IBoxSizing = ElementExt.IBoxSizing;
 import IEditorReference = monaco.editor.IEditorReference;
 import SuggestController = monaco.suggestController.SuggestController;
@@ -60,6 +62,12 @@ export class MonacoEditor implements TextEditor, IEditorReference {
         options?: MonacoEditor.IOptions,
         override?: IEditorOverrideServices,
     ) {
+        this.toDispose.pushAll([
+            this.onCursorPositionChangedEmitter,
+            this.onSelectionChangedEmitter,
+            this.onFocusChangedEmitter,
+            this.onDocumentContentChangedEmitter
+        ]);
         this.documents.add(document);
         this.autoSizing = options && options.autoSizing !== undefined ? options.autoSizing : false;
         this.minHeight = options && options.minHeight !== undefined ? options.minHeight : -1;
@@ -338,6 +346,34 @@ export class MonacoEditor implements TextEditor, IEditorReference {
             lineNumber: position.line + 1
         });
     }
+
+    async replaceText(params: ReplaceTextParams): Promise<boolean> {
+        const edits: IIdentifiedSingleEditOperation[] = params.replaceOperations.map(param => {
+            const startPos = param.range.start;
+            const endPos = param.range.end;
+            const range = this.p2m.asRange({
+                start: {
+                    line: startPos.line - 1,
+                    character: startPos.character - 1
+                },
+                end: {
+                    line: endPos.line - 1,
+                    character: endPos.character - 1
+                }
+            });
+            return {
+                forceMoveMarkers: true,
+                identifier: {
+                    major: range.startLineNumber,
+                    minor: range.startColumn
+                },
+                range,
+                text: param.text
+            };
+        });
+        return this.editor.executeEdits(params.source, edits);
+    }
+
 }
 
 export namespace MonacoEditor {

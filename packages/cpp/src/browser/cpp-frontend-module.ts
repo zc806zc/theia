@@ -11,8 +11,10 @@ import { KeybindingContribution, KeybindingContext } from '@theia/core/lib/brows
 import { CppCommandContribution } from './cpp-commands';
 
 import { LanguageClientContribution } from "@theia/languages/lib/browser";
-import { CppClientContribution } from "./cpp-client-contribution";
+import { CppLanguageClientContribution } from "./cpp-language-client-contribution";
 import { CppKeybindingContribution, CppKeybindingContext } from "./cpp-keybinding";
+import { bindCppPreferences } from "./cpp-preferences";
+import { CppBuildConfigurationsContributions, CppBuildConfigurationChanger, CppBuildConfigurationManager } from "./cpp-build-configurations";
 
 export default new ContainerModule(bind => {
     bind(CommandContribution).to(CppCommandContribution).inSingletonScope();
@@ -20,7 +22,13 @@ export default new ContainerModule(bind => {
     bind(KeybindingContext).toDynamicValue(context => context.container.get(CppKeybindingContext));
     bind(KeybindingContribution).to(CppKeybindingContribution).inSingletonScope();
 
-    bind(CppClientContribution).toSelf().inSingletonScope();
-    bind(LanguageClientContribution).toDynamicValue(ctx => ctx.container.get(CppClientContribution));
+    bind(CppLanguageClientContribution).toSelf().inSingletonScope();
+    bind(LanguageClientContribution).toDynamicValue(ctx => ctx.container.get(CppLanguageClientContribution));
 
+    bind(CppBuildConfigurationManager).toSelf().inSingletonScope();
+    bind(CppBuildConfigurationChanger).toSelf().inSingletonScope();
+    bind(CppBuildConfigurationsContributions).toSelf().inSingletonScope();
+    bind(CommandContribution).to(CppBuildConfigurationsContributions).inSingletonScope();
+
+    bindCppPreferences(bind);
 });

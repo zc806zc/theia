@@ -43,11 +43,11 @@ export class BackendApplicationCliContribution implements CliContribution {
     certkey: string | undefined;
 
     configure(conf: yargs.Argv): void {
-        yargs.option('port', { alias: 'p', description: 'The port the backend server listens on.', type: 'number', default: defaultPort });
-        yargs.option('hostname', { description: 'The allowed hostname for connections.', type: 'string', default: defaultHost });
-        yargs.option('ssl', { description: 'Use SSL (HTTPS), cert and certkey must also be set', type: 'boolean', default: defaultSSL });
-        yargs.option('cert', { description: 'Path to SSL certificate.', type: 'string' });
-        yargs.option('certkey', { description: 'Path to SSL certificate key.', type: 'string' });
+        conf.option('port', { alias: 'p', description: 'The port the backend server listens on.', type: 'number', default: defaultPort });
+        conf.option('hostname', { description: 'The allowed hostname for connections.', type: 'string', default: defaultHost });
+        conf.option('ssl', { description: 'Use SSL (HTTPS), cert and certkey must also be set', type: 'boolean', default: defaultSSL });
+        conf.option('cert', { description: 'Path to SSL certificate.', type: 'string' });
+        conf.option('certkey', { description: 'Path to SSL certificate key.', type: 'string' });
     }
 
     setArguments(args: yargs.Arguments): void {
@@ -115,10 +115,11 @@ export class BackendApplication {
     }
 
     async start(aPort?: number, aHostname?: string): Promise<http.Server | https.Server> {
+        const hostname = aHostname !== undefined ? aHostname : this.cliParams.hostname;
+        const port = aPort !== undefined ? aPort : this.cliParams.port;
+
         const deferred = new Deferred<http.Server | https.Server>();
         let server: http.Server | https.Server;
-        const port = aPort !== undefined ? aPort : this.cliParams.port;
-        const hostname = aHostname !== undefined ? aHostname : this.cliParams.hostname;
 
         if (this.cliParams.ssl) {
 
@@ -130,8 +131,8 @@ export class BackendApplication {
                 throw new Error("Missing --certkey option, see --help for usage");
             }
 
-            let key;
-            let cert;
+            let key: Buffer;
+            let cert: Buffer;
             try {
                 key = await fs.readFile(this.cliParams.certkey as string);
             } catch (err) {
@@ -149,6 +150,13 @@ export class BackendApplication {
         } else {
             server = http.createServer(this.app);
         }
+
+        server.on('error', error => {
+            deferred.reject(error);
+            /* The backend might run in a separate process,
+             * so we defer `process.exit` to let time for logging in the parent process */
+            setTimeout(process.exit, 0, 1);
+        });
 
         server.listen(port, hostname, () => {
             const scheme = this.cliParams.ssl ? 'https' : 'http';

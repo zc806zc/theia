@@ -7,20 +7,10 @@
 
 import { VirtualRenderer, VirtualWidget } from '../widgets';
 import { CommandService } from '../../common';
-import { h } from '@phosphor/virtualdom';
+import { h , ElementInlineStyle } from '@phosphor/virtualdom';
 import { LabelParser, LabelIcon } from '../label-parser';
 import { injectable, inject } from 'inversify';
 import { FrontendApplicationStateService } from '../frontend-application-state';
-
-export interface StatusBarLayoutData {
-    entries: StatusBarEntryData[]
-    backgroundColor?: string
-}
-
-export interface StatusBarEntryData {
-    id: string;
-    entry: StatusBarEntry
-}
 
 export interface StatusBarEntry {
     /**
@@ -36,6 +26,7 @@ export interface StatusBarEntry {
      */
     text: string;
     alignment: StatusBarAlignment;
+    color?: string;
     tooltip?: string;
     command?: string;
     // tslint:disable-next-line:no-any
@@ -53,6 +44,7 @@ export enum StatusBarAlignment {
 }
 
 export interface StatusBarEntryAttributes {
+    style?: ElementInlineStyle;
     className?: string;
     title?: string;
     onclick?: () => void;
@@ -113,24 +105,6 @@ export class StatusBarImpl extends VirtualWidget implements StatusBar {
         this.node.style.backgroundColor = this.backgroundColor ? this.backgroundColor : null;
     }
 
-    getLayoutData(): StatusBarLayoutData {
-        const entries: StatusBarEntryData[] = [];
-        this.entries.forEach((entry, id) => {
-            entries.push({ id, entry });
-        });
-        return { entries, backgroundColor: this.backgroundColor };
-    }
-
-    setLayoutData(data: StatusBarLayoutData): void {
-        if (data.entries) {
-            data.entries.forEach(entryData => {
-                this.entries.set(entryData.id, entryData.entry);
-            });
-            this.update();
-        }
-        this.internalSetBackgroundColor(data.backgroundColor);
-    }
-
     protected render(): h.Child {
         const leftEntries: h.Child[] = [];
         const rightEntries: h.Child[] = [];
@@ -183,6 +157,12 @@ export class StatusBarImpl extends VirtualWidget implements StatusBar {
 
         if (entry.tooltip) {
             attrs.title = entry.tooltip;
+        }
+
+        if (entry.color) {
+            attrs.style = {
+                color: entry.color
+            };
         }
 
         return attrs;

@@ -128,6 +128,9 @@ export class WorkspaceService implements FrontendApplicationContribution {
             return undefined;
         }
         try {
+            if (uri && uri.endsWith("/")) {
+                uri = uri.slice(0, -1);
+            }
             const fileStat = await this.fileSystem.getFileStat(uri);
             if (!fileStat) {
                 return undefined;
@@ -149,6 +152,7 @@ export class WorkspaceService implements FrontendApplicationContribution {
                 this.openNewWindow();
             } catch (error) {
                 // Fall back to reloading the current window in case the browser has blocked the new window
+                this._root = undefined;
                 this.logger.error(error.toString()).then(() => this.reloadWindow());
             }
         }

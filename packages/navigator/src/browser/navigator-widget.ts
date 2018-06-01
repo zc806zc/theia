@@ -5,13 +5,13 @@
  * You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
  */
 
-import { injectable, inject } from 'inversify';
+import { injectable, inject, postConstruct } from 'inversify';
 import { h } from '@phosphor/virtualdom/lib';
 import { Message } from '@phosphor/messaging';
 import URI from '@theia/core/lib/common/uri';
 import { SelectionService, CommandService } from '@theia/core/lib/common';
 import { CommonCommands } from '@theia/core/lib/browser/common-frontend-contribution';
-import { ContextMenuRenderer, TreeProps, TreeModel, TreeNode, LabelProvider, Widget, SelectableTreeNode } from '@theia/core/lib/browser';
+import { ContextMenuRenderer, TreeProps, TreeModel, TreeNode, LabelProvider, Widget, SelectableTreeNode, ExpandableTreeNode } from '@theia/core/lib/browser';
 import { FileTreeWidget, DirNode, FileNode } from '@theia/filesystem/lib/browser';
 import { WorkspaceService, WorkspaceCommands } from '@theia/workspace/lib/browser';
 import { ApplicationShell } from '@theia/core/lib/browser/shell/application-shell';
@@ -48,8 +48,17 @@ export class FileNavigatorWidget extends FileTreeWidget {
         this.addClass(CLASS);
         this.initialize();
         this.searchBox = searchBoxFactory(SearchBoxProps.DEFAULT);
+    }
+
+    @postConstruct()
+    protected init(): void {
+        super.init();
         this.toDispose.pushAll([
-            this.model.onExpansionChanged(() => this.searchBox.hide()),
+            this.searchBox,
+            this.searchBox.onTextChange(data => this.navigatorSearch.filter(data)),
+            this.searchBox.onClose(data => this.navigatorSearch.filter(undefined)),
+            this.searchBox.onNext(() => this.model.selectNextNode()),
+            this.searchBox.onPrevious(() => this.model.selectPrevNode()), this.navigatorSearch,
             this.navigatorSearch,
             this.navigatorSearch.onFilteredNodesChanged(nodes => {
                 const node = nodes.find(SelectableTreeNode.is);
@@ -57,22 +66,24 @@ export class FileNavigatorWidget extends FileTreeWidget {
                     this.model.selectNode(node);
                 }
             }),
-            this.searchBox,
-            this.searchBox.onTextChange(data => this.navigatorSearch.filter(data)),
-            this.searchBox.onClose(data => this.navigatorSearch.filter(undefined)),
-            this.searchBox.onNext(() => this.model.selectNextNode()),
-            this.searchBox.onPrevious(() => this.model.selectPrevNode()),
+            this.model.onSelectionChanged(selection => {
+                if (this.shell.activeWidget === this) {
+                    this.selectionService.selection = selection;
+                }
+            }),
+            this.model.onExpansionChanged(node => {
+                this.searchBox.hide();
+                if (node.expanded && node.children.length === 1) {
+                    const child = node.children[0];
+                    if (ExpandableTreeNode.is(child) && !child.expanded) {
+                        this.model.expandNode(child);
+                    }
+                }
+            })
         ]);
     }
 
     protected initialize(): void {
-        this.model.onSelectionChanged(selection => {
-            if (this.shell.activeWidget === this) {
-                this.selectionService.selection = selection;
-            }
-        }
-        );
-
         this.workspaceService.root.then(async resolvedRoot => {
             if (resolvedRoot) {
                 const uri = new URI(resolvedRoot.uri);

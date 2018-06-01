@@ -26,7 +26,13 @@ export abstract class AbstractResourcePreferenceProvider extends PreferenceProvi
     protected async init(): Promise<void> {
         const uri = await this.getUri();
         this.resource = this.resourceProvider(uri);
-        this.readPreferences();
+
+        // Try to read the initial content of the preferences.  The provider
+        // becomes ready even if we fail reading the preferences, so we don't
+        // hang the preference service.
+        this.readPreferences()
+            .then(() => this._ready.resolve())
+            .catch(() => this._ready.resolve());
 
         const resource = await this.resource;
         this.toDispose.push(resource);
@@ -35,7 +41,7 @@ export abstract class AbstractResourcePreferenceProvider extends PreferenceProvi
         }
     }
 
-    protected abstract getUri(): MaybePromise<URI>;
+    abstract getUri(): MaybePromise<URI>;
 
     getPreferences(): { [key: string]: any } {
         return this.preferences;
@@ -45,7 +51,7 @@ export abstract class AbstractResourcePreferenceProvider extends PreferenceProvi
         const resource = await this.resource;
         if (resource.saveContents) {
             const content = await resource.readContents();
-            const formattingOptions = {tabSize: 3, insertSpaces: true, eol: ''};
+            const formattingOptions = { tabSize: 3, insertSpaces: true, eol: '' };
             const edits = jsoncparser.modify(content, [key], value, { formattingOptions });
             const result = jsoncparser.applyEdits(content, edits);
 
