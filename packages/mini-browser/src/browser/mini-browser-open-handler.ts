@@ -85,13 +85,16 @@ export class MiniBrowserOpenHandler extends WidgetOpenHandler<MiniBrowser> imple
             const startPage = uri.toString();
             const name = await this.labelProvider.getName(uri);
             const iconClass = `${await this.labelProvider.getIcon(uri)} file-icon`;
+            // The background has to be reset to white only for "real" web-pages but not for images, for instance.
+            const resetBackground = 'file' === uri.scheme && uri.toString().endsWith('.html');
             result = {
                 ...result,
                 startPage,
                 name,
                 iconClass,
                 // Make sure the toolbar is not visible. We have the `iframe.src` anyway.
-                toolbar: 'hide'
+                toolbar: 'hide',
+                resetBackground
             };
         }
         if (options) {
