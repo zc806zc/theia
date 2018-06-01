@@ -7,7 +7,7 @@
 
 import { VirtualRenderer, VirtualWidget } from '../widgets';
 import { CommandService } from '../../common';
-import { h , ElementInlineStyle } from '@phosphor/virtualdom';
+import { h, ElementInlineStyle } from '@phosphor/virtualdom';
 import { LabelParser, LabelIcon } from '../label-parser';
 import { injectable, inject } from 'inversify';
 import { FrontendApplicationStateService } from '../frontend-application-state';
@@ -27,16 +27,13 @@ export interface StatusBarEntry {
     text: string;
     alignment: StatusBarAlignment;
     color?: string;
+    className?: string;
     tooltip?: string;
     command?: string;
     // tslint:disable-next-line:no-any
     arguments?: any[];
     priority?: number;
-    style?: StatusBarEntryStyle;
-}
-
-export enum StatusBarEntryStyle {
-    WARNING, ERROR, SUCCESS, INFO
+    onclick?: (e: MouseEvent) => void;
 }
 
 export enum StatusBarAlignment {
@@ -47,9 +44,7 @@ export interface StatusBarEntryAttributes {
     style?: ElementInlineStyle;
     className?: string;
     title?: string;
-    onclick?: () => void;
-    onmouseover?: () => void;
-    onmouseout?: () => void;
+    onclick?: (e: MouseEvent) => void;
 }
 
 export const STATUSBAR_WIDGET_FACTORY_ID = 'statusBar';
@@ -136,23 +131,15 @@ export class StatusBarImpl extends VirtualWidget implements StatusBar {
                 }
             };
             attrs.className = 'element hasCommand';
+        } else if (entry.onclick) {
+            attrs.onclick = (e) => {
+                if (entry.onclick) {
+                    entry.onclick(e);
+                }
+            };
+            attrs.className = 'element hasCommand';
         } else {
             attrs.className = 'element';
-        }
-
-        switch (entry.style) {
-            case StatusBarEntryStyle.WARNING:
-                attrs.className += " warning";
-                break;
-            case StatusBarEntryStyle.ERROR:
-                attrs.className += " error";
-                break;
-            case StatusBarEntryStyle.SUCCESS:
-                attrs.className += " success";
-                break;
-            case StatusBarEntryStyle.INFO:
-                attrs.className += " info";
-                break;
         }
 
         if (entry.tooltip) {
@@ -163,6 +150,10 @@ export class StatusBarImpl extends VirtualWidget implements StatusBar {
             attrs.style = {
                 color: entry.color
             };
+        }
+
+        if (entry.className) {
+            attrs.className += ' ' + entry.className;
         }
 
         return attrs;
