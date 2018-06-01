@@ -8,6 +8,7 @@
 import { injectable, inject } from 'inversify';
 import { FrontendApplicationContribution } from '@theia/core/lib/browser';
 import { MonacoTextmateService } from './monaco-textmate-service';
+// import URI from '@theia/core/lib/common/uri';
 import { loadWASM } from 'onigasm';
 
 // import { LanguageGrammarDefinitionContribution } from './textmate-contribution';
@@ -15,37 +16,38 @@ import { loadWASM } from 'onigasm';
 @injectable()
 export class MonacoTextmateFrontendApplicationContribution implements FrontendApplicationContribution {
 
-    @inject(MonacoTextmateService) protected readonly tmService: MonacoTextmateService;
+    @inject(MonacoTextmateService)
+    protected readonly tmService: MonacoTextmateService;
 
-    async onStart() {
-        await loadWASM(require('onigasm/lib/onigasm.wasm'));
-        this.tmService.init();
+    protected readonly themeFolder = (require as any).context('../../src/browser/themes');
 
-        // const theme = require('../../src/browser/dark_plus.json');
-        const theme = require('../../src/browser/monokai-color-theme.json');
-        const rules: any[] = [];
+    protected getTheme(name: string): any {
+        return require(this.themeFolder.resolve(`./${name}.json`).toString());
+    }
 
-        console.log('IUAWHDAIOUWHDOAHWOIDOAIJWDOPAIPWODKPAOF');
+    protected parseThemeIntoRules(rules: any[], theme: any) {
+
+        if (typeof theme.inherit !== 'undefined') {
+            const subTheme = this.getTheme(theme.inherit);
+            this.parseThemeIntoRules(rules, subTheme);
+        }
 
         for (const tokenColor of theme.tokenColors) {
 
-            if (typeof tokenColor.scope === void 0) {
-                console.log('AAAAAAAAAAAAAAA');
+            if (typeof tokenColor.scope === 'undefined') {
                 tokenColor.scope = [''];
             } else if (typeof tokenColor.scope === 'string') {
-                console.log('BBBBBBBBBBBBBBB');
-                tokenColor.scope = tokenColor.scope.split(', ');
+                tokenColor.scope = (tokenColor.scope as string).split(',').map(scope => scope.trim());
             }
 
-            console.log(`TokenColor: ${JSON.stringify(tokenColor)}`);
-
+            // console.log(`TokenColor: ${JSON.stringify(tokenColor)}`);
             for (const scope of tokenColor.scope) {
-                console.log(`   Scope: ${scope}`);
+                // console.log(`   Scope: ${scope}`);
 
                 const settings = Object.keys(tokenColor.settings).reduce((previous: any, current) => {
                     let value: string = tokenColor.settings[current];
                     if (typeof value === typeof '') {
-                        value = value.replace(/^\#/, '');
+                        value = value.replace(/^\#/, '').slice(0, 6);
                     }
                     previous[current] = value;
                     return previous;
@@ -56,9 +58,19 @@ export class MonacoTextmateFrontendApplicationContribution implements FrontendAp
                 });
             }
         }
+    }
 
-        console.log('MEEEEEEEEEEEEEEEEEEEEEEEEEH');
-        console.log(rules);
+    async onStart() {
+        await loadWASM(require('onigasm/lib/onigasm.wasm'));
+        this.tmService.init();
+
+        const activeTheme = [
+            'monokai-color-theme',
+            'dark_plus',
+        ][1];
+
+        const theme = this.getTheme(activeTheme);
+        const rules: any[] = [];
 
         monaco.editor.defineTheme('mehmehmeh', {
             base: 'vs-dark',
